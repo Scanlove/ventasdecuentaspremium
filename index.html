@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Ventas - Cuentas Streaming</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Control de Ventas - Cuentas Streaming</h1>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('registro')">Registro de Venta</button>
+            <button class="tab-button" onclick="switchTab('historial')">Historial</button>
+        </div>
+
+        <div id="registro" class="form-section">
+            <div class="form-group">
+                <label>Plataforma:</label>
+                <select id="plataforma">
+                    <option value="">Seleccionar plataforma</option>
+                    <option value="netflix">Netflix</option>
+                    <option value="max">Max</option>
+                    <option value="disney">Disney+</option>
+                    <option value="prime">Prime Video</option>
+                    <option value="spotify">Spotify</option>
+                    <option value="youtube">YouTube</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Cuenta:</label>
+                <select id="tipoCuenta">
+                    <option value="">Seleccionar tipo</option>
+                    <option value="perfil">Perfil</option>
+                    <option value="completa">Cuenta Completa</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Precio de Venta:</label>
+                <input type="number" id="precio" min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Fecha:</label>
+                <input type="date" id="fecha">
+            </div>
+
+            <button onclick="registrarVenta()">Registrar Venta</button>
+        </div>
+
+        <div id="historial" class="form-section" style="display: none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Plataforma</th>
+                        <th>Tipo</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaVentas">
+                </tbody>
+            </table>
+
+            <div class="total-section">
+                Total: $<span id="totalVentas">0.00</span>
+            </div>
+
+            <button class="export-button" onclick="exportarExcel()">Exportar a Excel</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
