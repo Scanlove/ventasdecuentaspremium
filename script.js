@@ -11,7 +11,9 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-button').forEach(button => {
         button.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
 
     if(tab === 'historial') {
         actualizarTabla();
@@ -27,8 +29,11 @@ function calcularGananciaPreview() {
 }
 
 // Agregar event listeners para calcular ganancia en tiempo real
-document.getElementById('precioCompra').addEventListener('input', calcularGananciaPreview);
-document.getElementById('precioVenta').addEventListener('input', calcularGananciaPreview);
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('precioCompra').addEventListener('input', calcularGananciaPreview);
+    document.getElementById('precioVenta').addEventListener('input', calcularGananciaPreview);
+    document.getElementById('fecha').valueAsDate = new Date();
+});
 
 // Registrar nueva venta
 function registrarVenta() {
@@ -38,8 +43,8 @@ function registrarVenta() {
     const precioVenta = parseFloat(document.getElementById('precioVenta').value);
     const fecha = document.getElementById('fecha').value;
 
-    if(!plataforma || !tipoCuenta || !precioCompra || !precioVenta || !fecha) {
-        alert('Por favor, complete todos los campos');
+    if(!plataforma || !tipoCuenta || isNaN(precioCompra) || isNaN(precioVenta) || !fecha) {
+        alert('Por favor, complete todos los campos correctamente');
         return;
     }
 
@@ -48,9 +53,9 @@ function registrarVenta() {
         fecha,
         plataforma,
         tipoCuenta,
-        precioCompra,
-        precioVenta,
-        ganancia: precioVenta - precioCompra
+        precioCompra: Number(precioCompra),
+        precioVenta: Number(precioVenta),
+        ganancia: Number((precioVenta - precioCompra).toFixed(2))
     };
 
     ventas.push(venta);
@@ -65,16 +70,27 @@ function registrarVenta() {
     document.getElementById('gananciaPreview').textContent = '0.00';
 
     alert('Venta registrada exitosamente');
+    
+    // Actualizar la tabla si estamos en la pestaña de historial
+    if(document.getElementById('historial').style.display !== 'none') {
+        actualizarTabla();
+    }
 }
 
 // Guardar ventas en localStorage
 function guardarVentas() {
-    localStorage.setItem('ventas', JSON.stringify(ventas));
+    try {
+        localStorage.setItem('ventas', JSON.stringify(ventas));
+    } catch (e) {
+        console.error('Error al guardar en localStorage:', e);
+    }
 }
 
 // Actualizar tabla de ventas y resumen
 function actualizarTabla() {
     const tbody = document.getElementById('tablaVentas');
+    if (!tbody) return;
+
     tbody.innerHTML = '';
 
     let totalInvertido = 0;
@@ -82,15 +98,17 @@ function actualizarTabla() {
     let totalGanancia = 0;
 
     ventas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach(venta => {
+        if (!venta || typeof venta.precioCompra === 'undefined') return;
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${new Date(venta.fecha).toLocaleDateString()}</td>
             <td>${venta.plataforma}</td>
             <td>${venta.tipoCuenta}</td>
-            <td>$${venta.precioCompra.toFixed(2)}</td>
-            <td>$${venta.precioVenta.toFixed(2)}</td>
+            <td>$${Number(venta.precioCompra).toFixed(2)}</td>
+            <td>$${Number(venta.precioVenta).toFixed(2)}</td>
             <td class="${venta.ganancia >= 0 ? 'ganancia-positiva' : 'ganancia-negativa'}">
-                $${venta.ganancia.toFixed(2)}
+                $${Number(venta.ganancia).toFixed(2)}
             </td>
             <td>
                 <button class="delete-button" onclick="eliminarVenta(${venta.id})">
@@ -100,9 +118,9 @@ function actualizarTabla() {
         `;
         tbody.appendChild(tr);
         
-        totalInvertido += venta.precioCompra;
-        totalVendido += venta.precioVenta;
-        totalGanancia += venta.ganancia;
+        totalInvertido += Number(venta.precioCompra);
+        totalVendido += Number(venta.precioVenta);
+        totalGanancia += Number(venta.ganancia);
     });
 
     // Actualizar cards de resumen
@@ -135,8 +153,3 @@ function exportarExcel() {
     a.click();
     window.URL.revokeObjectURL(url);
 }
-
-// Establecer fecha actual por defecto al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('fecha').valueAsDate = new Date();
-});
