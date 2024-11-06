@@ -39,8 +39,13 @@
             </div>
 
             <div class="form-group">
+                <label>Precio de Compra:</label>
+                <input type="number" id="precioCompra" min="0" step="0.01" placeholder="¿Cuánto te costó?">
+            </div>
+
+            <div class="form-group">
                 <label>Precio de Venta:</label>
-                <input type="number" id="precio" min="0" step="0.01">
+                <input type="number" id="precioVenta" min="0" step="0.01" placeholder="¿A cuánto lo vendiste?">
             </div>
 
             <div class="form-group">
@@ -48,27 +53,44 @@
                 <input type="date" id="fecha">
             </div>
 
+            <div class="ganancia-preview">
+                Ganancia estimada: $<span id="gananciaPreview">0.00</span>
+            </div>
+
             <button onclick="registrarVenta()">Registrar Venta</button>
         </div>
 
         <div id="historial" class="form-section" style="display: none;">
+            <div class="resumen-cards">
+                <div class="card">
+                    <h3>Total Invertido</h3>
+                    <p>$<span id="totalInvertido">0.00</span></p>
+                </div>
+                <div class="card">
+                    <h3>Total Vendido</h3>
+                    <p>$<span id="totalVendido">0.00</span></p>
+                </div>
+                <div class="card">
+                    <h3>Ganancia Total</h3>
+                    <p>$<span id="gananciaTotal">0.00</span></p>
+                </div>
+            </div>
+
             <table>
                 <thead>
                     <tr>
                         <th>Fecha</th>
                         <th>Plataforma</th>
                         <th>Tipo</th>
-                        <th>Precio</th>
+                        <th>Compra</th>
+                        <th>Venta</th>
+                        <th>Ganancia</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaVentas">
                 </tbody>
             </table>
-
-            <div class="total-section">
-                Total: $<span id="totalVentas">0.00</span>
-            </div>
 
             <button class="export-button" onclick="exportarExcel()">Exportar a Excel</button>
         </div>
